@@ -9,7 +9,9 @@ import java.util.concurrent.TimeoutException;
 
 public class FutureDemo {
 
-    public String invoke() {
+    public String invoke(boolean toCancel, boolean mayInterruptIfRunning) {
+
+        System.out.println("FutureDemo.invoke(), toCancel=" + toCancel);
 
         String str = null;
 
@@ -17,22 +19,28 @@ public class FutureDemo {
 
         Future<String> future = executorService.submit(() -> {
             // Task
-            Thread.sleep(10000l);
-            return "Hellow world";
+            Thread.sleep(4000l);
+            return "Hello world";
         });
 
-        future.cancel(false);
+        if (toCancel) {
+            future.cancel(mayInterruptIfRunning);
+        }
 
         try {
-            future.get(20, TimeUnit.SECONDS);
-        } catch (InterruptedException | ExecutionException | TimeoutException e1) {
+            future.get(2, TimeUnit.SECONDS);
+        }
+        catch (InterruptedException | ExecutionException | TimeoutException e1) {
+            System.out.println("Exception in future.get()");
             e1.printStackTrace();
         }
 
         if (future.isDone() && !future.isCancelled()) {
             try {
                 str = future.get();
-            } catch (InterruptedException | ExecutionException e) {
+            }
+            catch (InterruptedException | ExecutionException e) {
+                System.out.println("isDone, Exception in future.get()");
                 e.printStackTrace();
             }
         }

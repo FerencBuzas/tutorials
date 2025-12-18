@@ -10,8 +10,6 @@ import java.util.concurrent.ForkJoinPool;
 import org.junit.Before;
 import org.junit.Test;
 
-import com.baeldung.forkjoin.CustomRecursiveAction;
-import com.baeldung.forkjoin.CustomRecursiveTask;
 import com.baeldung.forkjoin.util.PoolUtil;
 
 public class Java8ForkJoinIntegrationTest {

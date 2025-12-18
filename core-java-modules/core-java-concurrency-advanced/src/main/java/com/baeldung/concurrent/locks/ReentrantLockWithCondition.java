@@ -9,27 +9,29 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.ReentrantLock;
 
-import static java.lang.Thread.sleep;
-
 public class ReentrantLockWithCondition {
 
-    private static Logger LOG = LoggerFactory.getLogger(ReentrantLockWithCondition.class);
+    private static final Logger LOG = LoggerFactory.getLogger(ReentrantLockWithCondition.class);
 
-    private Stack<String> stack = new Stack<>();
-    private static final int CAPACITY = 5;
+    private final Stack<String> stack = new Stack<>();
+    private final int stackCapacity;
 
-    private ReentrantLock lock = new ReentrantLock();
-    private Condition stackEmptyCondition = lock.newCondition();
-    private Condition stackFullCondition = lock.newCondition();
+    private final ReentrantLock lock = new ReentrantLock();
+    private final Condition stackEmptyCondition = lock.newCondition();
+    private final Condition stackFullCondition = lock.newCondition();
+
+    public ReentrantLockWithCondition(int stackCapacity) {
+        this.stackCapacity = stackCapacity;
+    }
 
     private void pushToStack(String item) throws InterruptedException {
         try {
             lock.lock();
-            if (stack.size() == CAPACITY) {
-                LOG.info(Thread.currentThread().getName() + " wait on stack full");
+            if (stack.size() == stackCapacity) {
+                LOG.info("  await, stack size={}", stack.size());
                 stackFullCondition.await();
             }
-            LOG.info("Pushing the item " + item);
+            LOG.info("Pushing {}", item);
             stack.push(item);
             stackEmptyCondition.signalAll();
         } finally {
@@ -42,7 +44,7 @@ public class ReentrantLockWithCondition {
         try {
             lock.lock();
             if (stack.size() == 0) {
-                LOG.info(Thread.currentThread().getName() + " wait on stack empty");
+                LOG.info("  await, stack is empty");
                 stackEmptyCondition.await();
             }
             return stack.pop();
@@ -53,14 +55,20 @@ public class ReentrantLockWithCondition {
     }
 
     public static void main(String[] args) {
-        final int threadCount = 2;
-        ReentrantLockWithCondition object = new ReentrantLockWithCondition();
-        final ExecutorService service = Executors.newFixedThreadPool(threadCount);
+
+        final int THREAD_COUNT = 2;
+        final int N_ITEMS = 6;
+        final int STACK_CAPACITY = 3;
+
+        ReentrantLockWithCondition object = new ReentrantLockWithCondition(STACK_CAPACITY);
+
+        final ExecutorService service = Executors.newFixedThreadPool(THREAD_COUNT);
         service.execute(() -> {
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < N_ITEMS; i++) {
                 try {
-                    object.pushToStack("Item " + i);
-                } catch (InterruptedException e) {
+                    object.pushToStack("Item_" + i);
+                }
+                catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
@@ -68,9 +76,9 @@ public class ReentrantLockWithCondition {
         });
 
         service.execute(() -> {
-            for (int i = 0; i < 10; i++) {
+            for (int i = 0; i < N_ITEMS; i++) {
                 try {
-                    LOG.info("Item popped " + object.popFromStack());
+                    LOG.info("Popped " + object.popFromStack());
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }

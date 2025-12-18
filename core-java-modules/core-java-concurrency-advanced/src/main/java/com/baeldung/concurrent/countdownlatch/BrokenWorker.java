@@ -4,6 +4,9 @@ import java.util.List;
 import java.util.concurrent.CountDownLatch;
 
 public class BrokenWorker implements Runnable {
+
+    private static boolean TO_DIE = true;
+
     private final List<String> outputScraper;
     private final CountDownLatch countDownLatch;
 
@@ -14,9 +17,11 @@ public class BrokenWorker implements Runnable {
 
     @Override
     public void run() {
-        if (true) {
+
+        if (TO_DIE) {
             throw new RuntimeException("Oh dear");
         }
+
         countDownLatch.countDown();
         outputScraper.add("Counted down");
     }

@@ -20,7 +20,7 @@ import static org.junit.Assert.assertTrue;
 
 public class SquareCalculatorIntegrationTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SquareCalculatorIntegrationTest.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(SquareCalculatorIntegrationTest.class);
 
     @Rule
     public TestName name = new TestName();
@@ -37,7 +37,7 @@ public class SquareCalculatorIntegrationTest {
         Future<Integer> result2 = squareCalculator.calculate(1000);
 
         while (!result1.isDone() || !result2.isDone()) {
-            LOG.debug(String.format("Task 1 is %s and Task 2 is %s.", result1.isDone() ? "done" : "not done", result2.isDone() ? "done" : "not done"));
+            LOGGER.debug(String.format("Task 1 is %s and Task 2 is %s.", result1.isDone() ? "done" : "not done", result2.isDone() ? "done" : "not done"));
 
             Thread.sleep(300);
         }
@@ -63,7 +63,7 @@ public class SquareCalculatorIntegrationTest {
         Future<Integer> result2 = squareCalculator.calculate(1000);
 
         while (!result1.isDone() || !result2.isDone()) {
-            LOG.debug(String.format("Task 1 is %s and Task 2 is %s.", result1.isDone() ? "done" : "not done", result2.isDone() ? "done" : "not done"));
+            LOGGER.debug(String.format("Task 1 is %s and Task 2 is %s.", result1.isDone() ? "done" : "not done", result2.isDone() ? "done" : "not done"));
 
             Thread.sleep(300);
         }
@@ -93,6 +93,6 @@ public class SquareCalculatorIntegrationTest {
 
     @After
     public void end() {
-        LOG.debug(String.format("Test %s took %s ms \n", name.getMethodName(), System.currentTimeMillis() - start));
+        LOGGER.debug(String.format("Test %s took %s ms \n", name.getMethodName(), System.currentTimeMillis() - start));
     }
 }

@@ -9,12 +9,7 @@ public class Data {
  
     public synchronized String receive() {
         while (transfer) {
-            try {
-                wait();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt(); 
-                System.out.println("Thread Interrupted");
-            }
+            Util.wait(this);
         }
         transfer = true;
 
@@ -24,12 +19,7 @@ public class Data {
  
     public synchronized void send(String packet) {
         while (!transfer) {
-            try { 
-                wait();
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt(); 
-                System.out.println("Thread Interrupted");
-            }
+            Util.wait(this);
         }
         transfer = false;
         
